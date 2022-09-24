@@ -13,17 +13,15 @@ public class Role implements GrantedAuthority {
     @Column(name = "id")
     private int id;
 
-    @Column
+    @Column(name = "name")
     private String name;
 
     public Role() {
     }
 
-    public Role(int id, String name) {
-        this.id = id;
+    public Role(String name) {
         this.name = name;
     }
-
     public int getId() {
         return id;
     }
@@ -42,6 +40,8 @@ public class Role implements GrantedAuthority {
 
     @Override
     public String getAuthority() {
+        System.out.println("getAuthority");
+        System.out.println(name);
         return this.name;
     }
 

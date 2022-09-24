@@ -5,6 +5,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -33,22 +34,25 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<Role> roles;
+    @ManyToMany(cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private List<Role> roles = new ArrayList<>();
 
+    public void addRole(Role role) {
+        roles.add(role);
+    }
 
     public User() {
     }
 
-    public User(String username, String fullname, Integer age, String email, String password) {
+    public User(String username, String fullname, Integer age, String email, String password, List<Role> roles) {
         this.username = username;
         this.fullname = fullname;
         this.age = age;
         this.email = email;
         this.password = password;
+        this.roles = roles;
     }
 
     public int getId() {
@@ -101,10 +105,14 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+//        return getRoles();
+        System.out.println("getAuthorities");
+
         Set<SimpleGrantedAuthority> authorities =
                 getRoles().stream()
                         .map(role -> new SimpleGrantedAuthority(role.getAuthority()))
                         .collect(Collectors.toSet());
+        System.out.println(authorities);
         return authorities;
     }
 
@@ -120,22 +128,22 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
     @Override
