@@ -75,9 +75,8 @@
         <tr>
             <td>
                 <label>Роль:
-                    <select size="2" multiple name="role" required="required">
-                        <option selected="selected" value="1">USER</option>
-                        <option value="2">ADMIN</option>
+                    <select size="2" th:field="*{roles}" required="required">
+                        <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"></option>
                     </select>
                 </label>
             </td>
